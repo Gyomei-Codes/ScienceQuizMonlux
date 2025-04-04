@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Quiz</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #121212;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 350px;
+            margin: 100px auto;
+            text-align: center;
+            background: #1e1e1e;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease;
+        }
+
+        button {
+            background-color: #333;
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            margin: 10px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .answer {
+            background-color: #444;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .answer:hover {
+            background-color: #666;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #feedback {
+            font-size: 20px;
+            margin: 20px 0;
+        }
+
+        .correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .wrong {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        #score-container {
+            font-size: 24px;
+            font-weight: bold;
+            padding: 20px;
+            background: #333;
+            color: white;
+            border-radius: 10px;
+            margin-top: 30px;
+            box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="quiz-container">
+        <div id="question-container" class="question"></div>
+        <div id="answers-container">
+            <button class="answer" onclick="checkAnswer(0)"></button>
+            <button class="answer" onclick="checkAnswer(1)"></button>
+            <button class="answer" onclick="checkAnswer(2)"></button>
+            <button class="answer" onclick="checkAnswer(3)"></button>
+        </div>
+        <div id="feedback" class="hidden">
+            <p id="feedback-text"></p>
+            <button id="next-button" onclick="nextQuestion()">Next</button>
+        </div>
+    </div>
+    <div id="score-container" class="hidden">
+        <p>Your Score: <span id="score"></span> / 25</p>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { question: "Which Earth system includes lakes, rivers, and oceans?", options: ["Atmosphere", "Biosphere", "Hydrosphere", "Geosphere"], answer: 2 },
+        { question: "What is the main organ of the circulatory system?", options: ["Heart", "Lungs", "Stomach", "Brain"], answer: 0 },
+        { question: "What is the first organ food passes through in digestion?", options: ["Stomach", "Small intestine", "Mouth", "Large intestine"], answer: 2 },
+        { question: "Which organ helps us breathe by taking in oxygen and removing carbon dioxide?", options: ["Heart", "Lungs", "Liver", "Stomach"], answer: 1 },
+        { question: "What muscle helps the lungs expand and contract during breathing?", options: ["Heart", "Diaphragm", "Stomach", "Liver"], answer: 1 },
+        { question: "Which gas is most abundant in Earth's atmosphere?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"], answer: 2 },
+        { question: "What is the main function of the digestive system?", options: ["Pumps blood", "Processes food", "Helps in breathing", "Controls muscles"], answer: 1 },
+        { question: "What part of the plant absorbs water and nutrients?", options: ["Leaves", "Roots", "Stems", "Flowers"], answer: 1 },
+        { question: "Which part of the human brain controls heart rate?", options: ["Cerebrum", "Cerebellum", "Brainstem", "Medulla"], answer: 2 },
+        { question: "What is the primary role of red blood cells?", options: ["Fight infections", "Carry oxygen", "Digest food", "Transport hormones"], answer: 1 },
+        { question: "Which organ produces bile to help digest fats?", options: ["Liver", "Stomach", "Pancreas", "Small intestine"], answer: 0 },
+        { question: "What is the main source of energy for plants?", options: ["Water", "Soil", "Sunlight", "Air"], answer: 2 },
+        { question: "What is the process plants use to make their own food?", options: ["Respiration", "Transpiration", "Photosynthesis", "Digestion"], answer: 2 },
+        { question: "Which of these is a decomposer?", options: ["Fungus", "Grass", "Rabbit", "Lion"], answer: 0 },
+        { question: "What part of the circulatory system carries blood to the heart?", options: ["Veins", "Arteries", "Capillaries", "Aorta"], answer: 0 },
+        { question: "Which of the following is NOT a part of the digestive system?", options: ["Liver", "Stomach", "Lungs", "Small intestine"], answer: 2 },
+        { question: "What is the largest organ in the human body?", options: ["Heart", "Liver", "Skin", "Lungs"], answer: 2 },
+        { question: "Which planet is closest to the sun?", options: ["Mars", "Earth", "Venus", "Mercury"], answer: 3 },
+        { question: "What is the chemical symbol for water?", options: ["H2O", "O2", "CO2", "H2"], answer: 0 },
+        { question: "Which is a natural source of greenhouse gases?", options: ["Cars", "Factories", "Volcanoes", "Plastic"], answer: 2 },
+        { question: "Which of these is an herbivore?", options: ["Lion", "Wolf", "Rabbit", "Eagle"], answer: 2 },
+        { question: "What is the process of breathing in oxygen and releasing carbon dioxide called?", options: ["Photosynthesis", "Respiration", "Digestion", "Evaporation"], answer: 1 }
+    ];
+
+    let currentQuestionIndex = -1;
+    let score = 0;
+    let usedQuestions = [];
+
+    function getRandomQuestion() {
+        if (usedQuestions.length === questions.length) {
+            showScore();
+            return;
+        }
+
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * questions.length);
+        } while (usedQuestions.includes(randomIndex));
+
+        usedQuestions.push(randomIndex);
+        currentQuestionIndex = randomIndex;
+
+        const question = questions[randomIndex];
+        document.getElementById("question-container").textContent = question.question;
+        const buttons = document.querySelectorAll(".answer");
+
+        question.options.forEach((option, index) => {
+            buttons[index].textContent = option;
+        });
+
+        document.getElementById("feedback").classList.add("hidden");
+        document.getElementById("answers-container").classList.remove("hidden");
+    }
+
+    function checkAnswer(selectedIndex) {
+        const correctAnswer = questions[currentQuestionIndex].answer;
+        const feedbackText = document.getElementById("feedback-text");
+
+        if (selectedIndex === correctAnswer) {
+            score++;
+            feedbackText.textContent = "Correct!";
+            feedbackText.classList.remove("wrong");
+            feedbackText.classList.add("correct");
+        } else {
+            feedbackText.textContent = `Wrong! The correct answer is: ${questions[currentQuestionIndex].options[correctAnswer]}`;
+            feedbackText.classList.remove("correct");
+            feedbackText.classList.add("wrong");
+        }
+
+        document.getElementById("feedback").classList.remove("hidden");
+        document.getElementById("answers-container").classList.add("hidden");
+    }
+
+    function nextQuestion() {
+        getRandomQuestion();
+    }
+
+    function showScore() {
+        document.getElementById("score-container").classList.remove("hidden");
+        document.getElementById("score").textContent = score;
+        document.getElementById("quiz-container").classList.add("hidden");
+    }
+
+    getRandomQuestion();
+</script>
+
+</body>
+</html>
